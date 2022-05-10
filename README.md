@@ -1,4 +1,4 @@
-# velzon
+# BotBase
 
 ## Project setup
 ```
