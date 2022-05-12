@@ -1,7 +1,6 @@
 <template>
   <Layout>
     <PageHeader :title="title" :items="items" />
-
   </Layout>
 </template>
 
