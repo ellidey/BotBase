@@ -8,7 +8,11 @@ export const mutations = {
     SET_CURRENT_USER(state, newValue) {
         state.currentUser = newValue
         saveState('auth.currentUser', newValue)
-        localStorage.setItem('user', JSON.stringify(newValue));
+        if (newValue == null) {
+            localStorage.removeItem('user');
+        } else {
+            localStorage.setItem('user', JSON.stringify(newValue));
+        }
     }
 }
 
@@ -44,6 +48,7 @@ export const actions = {
     logOut({ commit }) {
         // eslint-disable-next-line no-unused-vars
         commit('SET_CURRENT_USER', null)
+        console.log('asdads');
     },
 
     // Validates the current user's token and refreshes it
