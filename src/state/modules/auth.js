@@ -1,4 +1,4 @@
-import { getFirebaseBackend } from '../../authUtils.js'
+import router from '@/router/index'
 
 export const state = {
     currentUser: sessionStorage.getItem('authUser'),
@@ -8,6 +8,7 @@ export const mutations = {
     SET_CURRENT_USER(state, newValue) {
         state.currentUser = newValue
         saveState('auth.currentUser', newValue)
+        localStorage.setItem('user', JSON.stringify(newValue));
     }
 }
 
@@ -27,50 +28,22 @@ export const actions = {
     },
 
     // Logs in the current user.
-    logIn({ commit, dispatch, getters }, { email, password } = {}) {
+    logIn({ commit, dispatch, getters }, { acode, scode } = {}) {
         if (getters.loggedIn) return dispatch('validate')
 
-        return getFirebaseBackend().loginUser(email, password).then((response) => {
-            const user = response
-            commit('SET_CURRENT_USER', user)
-            return user
-        });
+        const user = {
+            acode,
+            scode
+        }
+        commit('SET_CURRENT_USER', user)
+        router.push({ name: 'default' });
+        return user;
     },
 
     // Logs out the current user.
     logOut({ commit }) {
         // eslint-disable-next-line no-unused-vars
         commit('SET_CURRENT_USER', null)
-        return new Promise((resolve, reject) => {
-            // eslint-disable-next-line no-unused-vars
-            getFirebaseBackend().logout().then((response) => {
-                resolve(true);
-            }).catch((error) => {
-                reject(this._handleError(error));
-            })
-        });
-    },
-
-    // register the user
-    register({ commit, dispatch, getters }, { username, email, password } = {}) {
-        if (getters.loggedIn) return dispatch('validate')
-
-        return getFirebaseBackend().registerUser(username, email, password).then((response) => {
-            const user = response
-            commit('SET_CURRENT_USER', user)
-            return user
-        });
-    },
-
-    // register the user
-    // eslint-disable-next-line no-unused-vars
-    resetPassword({ commit, dispatch, getters }, { email } = {}) {
-        if (getters.loggedIn) return dispatch('validate')
-
-        return getFirebaseBackend().forgetPassword(email).then((response) => {
-            const message = response.data
-            return message
-        });
     },
 
     // Validates the current user's token and refreshes it
@@ -78,9 +51,7 @@ export const actions = {
     // eslint-disable-next-line no-unused-vars
     validate({ commit, state }) {
         if (!state.currentUser) return Promise.resolve(null)
-        const user = getFirebaseBackend().getAuthenticatedUser();
-        commit('SET_CURRENT_USER', user)
-        return user;
+        return state.currentUser;
     },
 }
 

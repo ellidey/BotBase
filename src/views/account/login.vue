@@ -1,12 +1,11 @@
 <script>
 import { mapState } from "vuex";
-import { required, email, helpers } from "@vuelidate/validators";
+import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import appConfig from "../../../app.config";
 
 import {
   authMethods,
-  authFackMethods,
   notificationMethods,
 } from "@/state/helpers";
 
@@ -25,8 +24,9 @@ export default {
   },
   data() {
     return {
-      email: "admin@themesbrand.com",
-      password: "123456",
+      authCode: "",
+      securityCode: "",
+      sendedAuthCode: false,
       submitted: false,
       authError: null,
       tryingToLogIn: false,
@@ -34,12 +34,11 @@ export default {
     };
   },
   validations: {
-    email: {
-      required: helpers.withMessage("Email is required", required),
-      email: helpers.withMessage("Please enter valid email", email),
+    authCode: {
+      required: helpers.withMessage("Auth code is required", required),
     },
-    password: {
-      required: helpers.withMessage("Password is required", required),
+    securityCode: {
+      required: helpers.withMessage("Security code is required", required),
     },
   },
   computed: {
@@ -50,56 +49,33 @@ export default {
   },
   methods: {
     ...authMethods,
-    ...authFackMethods,
     ...notificationMethods,
-    // Try to log the user in with the username
-    // and password they provided.
     tryToLogIn() {
       this.submitted = true;
-      // stop here if form is invalid
       this.v$.$touch();
 
       if (this.v$.$invalid) {
         return;
       } else {
-        if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
-          this.tryingToLogIn = true;
-          // Reset the authError if it existed.
-          this.authError = null;
-          return (
+          if (this.authCode && this.securityCode) {
             this.logIn({
-              email: this.email,
-              password: this.password,
-            })
-              // eslint-disable-next-line no-unused-vars
-              .then((token) => {
-                this.tryingToLogIn = false;
-                this.isAuthError = false;
-                // Redirect to the originally requested page, or to the home page
-                this.$router.push(
-                  this.$route.query.redirectFrom || {
-                    name: "default",
-                  }
-                );
-              })
-              .catch((error) => {
-                this.tryingToLogIn = false;
-                this.authError = error ? error : "";
-                this.isAuthError = true;
-              })
-          );
-        } else if (process.env.VUE_APP_DEFAULT_AUTH === "fakebackend") {
-          const { email, password } = this;
-          if (email && password) {
-            this.login({
-              email,
-              password,
+              acode: this.authCode,
+              scode: this.securityCode,
             });
           }
         }
+      },
+      sendAuthCode() {
+        this.sendedAuthCode = true;
+      },
+      changePasswordField() {
+        if (this.$refs.securityCode.getAttribute('type') === 'password') {
+          this.$refs.securityCode.setAttribute('type', 'text')
+        } else {
+          this.$refs.securityCode.setAttribute('type', 'password')
+        }
       }
     },
-  },
 };
 </script>
 
@@ -148,9 +124,9 @@ export default {
             <div class="card mt-4">
               <div class="card-body p-4">
                 <div class="text-center mt-2">
-                  <h5> Welcome Back !</h5>
+                  <h5> Welcome Back!</h5>
                 </div>
-                <div class="p-2 mt-4">
+                <div class="p-2 mt-2">
                   <b-alert
                     v-model="isAuthError"
                     variant="danger"
@@ -166,21 +142,21 @@ export default {
                     {{ notification.message }}
                   </div>
 
-                  <form @submit.prevent="tryToLogIn">
                     <div class="mb-3">
-                      <label for="email" class="form-label">Email</label>
+                      <label for="authCode" class="form-label">Auth code</label>
                       <input
-                        type="email"
+                        type="text"
                         class="form-control"
-                        id="email"
-                        placeholder="Enter email"
-                        v-model="email"
+                        id="authCode"
+                        placeholder="Enter auth code"
+                        v-model="authCode"
+                        :disabled="sendedAuthCode"
                         :class="{
-                          'is-invalid': submitted && v$.email.$error,
+                          'is-invalid': submitted && v$.authCode.$error,
                         }"
                       />
                       <div
-                        v-for="(item, index) in v$.email.$errors"
+                        v-for="(item, index) in v$.authCode.$errors"
                         :key="index"
                         class="invalid-feedback"
                       >
@@ -188,27 +164,19 @@ export default {
                       </div>
                     </div>
 
-                    <div class="mb-3">
-                      <div class="float-end">
-                        <router-link
-                          to="/forgot-password"
-                          class="text-muted"
-                          >Forgot password?</router-link
-                        >
-                      </div>
-                      <label class="form-label" for="password-input"
-                        >Password</label
-                      >
+                    <div class="mb-3" v-if="sendedAuthCode">
+                      <label class="form-label" for="securityCode"> Security code </label>
                       <div class="position-relative auth-pass-inputgroup mb-3">
                         <input
                           type="password"
-                          v-model="password"
+                          v-model="securityCode"
                           class="form-control pe-5"
+                          ref="securityCode"
                           :class="{
-                            'is-invalid': submitted && v$.password.$error,
+                            'is-invalid': submitted && v$.securityCode.$error,
                           }"
-                          placeholder="Enter password"
-                          id="password-input"
+                          placeholder="Enter security code"
+                          id="securityCode"
                         />
                         <button
                           class="
@@ -219,39 +187,29 @@ export default {
                             text-decoration-none text-muted
                           "
                           type="button"
-                          id="password-addon"
+                          @click="changePasswordField"
                         >
                           <i class="ri-eye-fill align-middle"></i>
                         </button>
                         <div
-                          v-if="submitted && v$.password.$error"
+                          v-if="submitted && v$.securityCode.$error"
                           class="invalid-feedback"
                         >
-                          <span v-if="v$.password.required.$message">{{
-                            v$.password.required.$message
+                          <span v-if="v$.securityCode.required.$message">{{
+                            v$.securityCode.required.$message
                           }}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div class="form-check">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        value=""
-                        id="auth-remember-check"
-                      />
-                      <label class="form-check-label" for="auth-remember-check"
-                        >Remember me</label
-                      >
-                    </div>
-
                     <div class="mt-4">
-                      <button class="btn btn-success w-100" type="submit">
+                      <button v-if="!sendedAuthCode" @click="sendAuthCode" class="btn btn-success w-100">
+                        Send auth code
+                      </button>
+                      <button v-else @click="tryToLogIn" class="btn btn-success w-100">
                         Sign In
                       </button>
-                    </div>                    
-                  </form>
+                    </div>        
                 </div>
               </div>
               <!-- end card body -->
