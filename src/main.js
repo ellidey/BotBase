@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from "./router";
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import i18n from './i18n'
@@ -17,31 +19,13 @@ import Particles from "particles.vue3";
 import '@/assets/scss/config/material/app.scss';
 import '@vueform/slider/themes/default.css';
 
-import { initFirebaseBackend } from './authUtils'
-import { configureFakeBackend } from './helpers/fake-backend';
-
-const firebaseConfig = {
-    apiKey: process.env.VUE_APP_APIKEY,
-    authDomain: process.env.VUE_APP_AUTHDOMAIN,
-    databaseURL: process.env.VUE_APP_VUE_APP_DATABASEURL,
-    projectId: process.env.VUE_APP_PROJECTId,
-    storageBucket: process.env.VUE_APP_STORAGEBUCKET,
-    messagingSenderId: process.env.VUE_APP_MESSAGINGSENDERID,
-    appId: process.env.VUE_APP_APPId,
-    measurementId: process.env.VUE_APP_MEASUREMENTID
-  };
-
-if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
-    initFirebaseBackend(firebaseConfig);
-} else {
-    configureFakeBackend(); 
-}
-
-
 AOS.init({
     easing: 'ease-out-back',
     duration: 1000
 })
+
+axios.defaults.baseURL = process.env.VUE_APP_API_HOST;
+axios.defaults.timeout = 3000;
 
 createApp(App)
     .use(store)
@@ -51,5 +35,6 @@ createApp(App)
     .component(VueFeather.type, VueFeather)
     .use(Maska)
     .use(Particles)
+    .use(VueAxios, axios)
     .use(i18n)
-    .use(vClickOutside).mount('#app')
+    .use(vClickOutside).mount('#app');

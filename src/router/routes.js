@@ -1,4 +1,4 @@
-import store from "@/state/store";
+// import store from "@/state/store";
 
 export default [
   {
@@ -51,23 +51,6 @@ export default [
       authRequired: true,
     },
     component: () => import("../views/panel/users/index.vue"),
-  },
-  {
-    path: "/logout",
-    name: "logout",
-    meta: {
-      title: "Logout", authRequired: true,
-      beforeResolve(routeTo, routeFrom, next) {
-        store.dispatch("auth/logOut");
-        const authRequiredOnPreviousRoute = routeFrom.matched.some((route) =>
-          route.push("/login")
-        );
-        // Navigate back to previous page, or home as a fallback
-        next(
-          authRequiredOnPreviousRoute ? { name: "default" } : { ...routeFrom }
-        );
-      },
-    },
   },
 
   { path: "/:catchAll(.*)", component: import("../views/errors/404-basic.vue") }

@@ -4,5 +4,6 @@
     "t-bots":"Bots",
     "t-settings":"Settings",
     "t-users":"Users",
-    "t-bot-base":"Bot Base"
+    "t-bot-base":"Bot Base",
+    "t-request-error": "Error request"
 }

@@ -53,20 +53,65 @@ export default {
     tryToLogIn() {
       this.submitted = true;
       this.v$.$touch();
+      
 
       if (this.v$.$invalid) {
         return;
       } else {
           if (this.authCode && this.securityCode) {
-            this.logIn({
-              acode: this.authCode,
-              scode: this.securityCode,
-            });
+             this.axios.get('/auth/pareCodes', {
+                params: {
+                  acode: this.authCode,
+                  bcode: this.securityCode
+                }
+              })
+              .then((response) => {
+                const data = response.data;
+                
+                console.log(data);
+                if (!data.ok) {
+                  this.isAuthError = true;
+                  
+                  if (data.message) {
+                    this.authError = data.message;
+                  } else {
+                    this.authError = this.$t('t-request-error');
+                  }
+                  return;
+                }
+
+
+                this.logIn({
+                  acode: this.authCode,
+                  scode: this.securityCode,
+                });
+              });
           }
         }
       },
       sendAuthCode() {
-        this.sendedAuthCode = true;
+        this.axios.get('/auth?acode=' + this.authCode)
+        .then((response) => {
+          const data = response.data;
+          
+          if (!data.ok) {
+            this.isAuthError = true;
+            
+            if (data.message) {
+               this.authError = data.message;
+            } else {
+              this.authError = this.$t('t-request-error');
+            }
+            return;
+          }
+
+          this.sendedAuthCode = true;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.authError = this.$t('t-request-error');
+          this.isAuthError = true;
+        })
       },
       changePasswordField() {
         if (this.$refs.securityCode.getAttribute('type') === 'password') {
@@ -127,13 +172,10 @@ export default {
                   <h5> Welcome Back!</h5>
                 </div>
                 <div class="p-2 mt-2">
-                  <b-alert
-                    v-model="isAuthError"
-                    variant="danger"
-                    class="mt-3"
-                    dismissible
-                    >{{ authError }}</b-alert
-                  >
+                  <div v-if="authError" class="mb-2 alert alert-danger alert-dismissible alert-solid alert-label-icon fade show mb-0" role="alert">
+                      <i class="ri-refresh-line label-icon"></i>{{ authError }}
+                      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" @click="authError = false" aria-label="Close"></button>
+                  </div>
 
                   <div
                     v-if="notification.message"

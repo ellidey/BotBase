@@ -47,6 +47,7 @@ export const actions = {
     // Logs out the current user.
     logOut({ commit }) {
         // eslint-disable-next-line no-unused-vars
+        console.log('asdasd');
         commit('SET_CURRENT_USER', null)
     },
 

@@ -1,6 +1,9 @@
 <script>
 import { layoutMethods } from "@/state/helpers";
 import { SimpleBar } from "simplebar-vue3";
+import {
+  authMethods,
+} from "@/state/helpers";
 
 /**
  * Nav-bar Component
@@ -19,6 +22,7 @@ export default {
   },
   methods: {
     ...layoutMethods,
+    ...authMethods,
     toggleHamburgerMenu() {
       var windowSize = document.documentElement.clientWidth;
 
@@ -101,6 +105,10 @@ export default {
         console.log(this.$store.state.layout.mode);
       }
     },
+    logout() {
+      this.logOut();
+      this.$router.push({ name: 'login' });
+    }
   },
   computed: {},
 };
@@ -262,7 +270,7 @@ export default {
             <div class="dropdown-menu dropdown-menu-end">
               <!-- item-->
               <h6 class="dropdown-header">Welcome Anna!</h6>
-              <a class="dropdown-item" href="/logout"
+              <a class="dropdown-item" @click="logout" role="button"
                 ><i
                   class="mdi mdi-logout text-muted fs-16 align-middle me-1"
                 ></i>
