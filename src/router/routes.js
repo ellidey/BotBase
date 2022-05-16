@@ -5,18 +5,7 @@ export default [
     path: "/login",
     name: "login",
     component: () => import("../views/account/login.vue"),
-    meta:  { title: "Login",
-      beforeResolve(routeTo, routeFrom, next) {
-        // If the user is already logged in
-        if (store.getters["auth/loggedIn"]) {
-          // Redirect to the home page instead
-          next({ name: "default" });
-        } else {
-          // Continue to the login page
-          next();
-        }
-      },
-    },
+    meta:  { title: "Login" },
   },
   {
     path: "/",
@@ -35,6 +24,15 @@ export default [
       authRequired: true,
     },
     component: () => import("../views/panel/bots/index.vue"),
+  },
+  {
+    path: "/bots/edit",
+    name: "edit_bot",
+    meta: {
+      title: "Bots",
+      authRequired: true,
+    },
+    component: () => import("../views/panel/bots/edit.vue"),
   },
   {
     path: "/settings",
@@ -70,6 +68,7 @@ export default [
         );
       },
     },
-    component: () => import("../views/auth/logout/basic")
   },
+
+  { path: "/:catchAll(.*)", component: import("../views/errors/404-basic.vue") }
 ];

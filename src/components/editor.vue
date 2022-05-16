@@ -1,6 +1,5 @@
 <template>
     <div class="ckeditor-classic">
-        {{ editorData }}
         <ckeditor @input="change" v-model="content" :editor="editor" :config="editorConfig"></ckeditor>
     </div>
 </template>
@@ -20,16 +19,14 @@ export default {
       editorConfig: {
         toolbar: {
             items: [
-              'fontColor', 'fontBackgroundColor', '|',
-              'bold', 'italic', 'strikethrough', 'underline', 'subscript', 'superscript', '|',
+              'bold', 'italic', '|',
               'link', '|',
-              'bulletedList', 'numberedList', 'todoList', '|',
-              'code', 'codeBlock', '|',
+              'bulletedList', 'numberedList', '|',
               'uploadImage', '|',
               'undo', 'redo'
              ],
             shouldNotGroupWhenFull: true
-        }
+        },
       },
     }
   },

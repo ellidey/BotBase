@@ -62,6 +62,10 @@ router.beforeEach((routeTo, routeFrom, next) => {
       return next('/login');
     }
 
+    if (!authpage && loggeduser) {
+      return next('/');
+    }
+    
     next();
   }
 })

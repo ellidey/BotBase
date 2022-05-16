@@ -48,7 +48,6 @@ export const actions = {
     logOut({ commit }) {
         // eslint-disable-next-line no-unused-vars
         commit('SET_CURRENT_USER', null)
-        console.log('asdads');
     },
 
     // Validates the current user's token and refreshes it

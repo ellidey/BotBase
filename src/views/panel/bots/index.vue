@@ -63,7 +63,8 @@
                       <div class="dropdown-menu dropdown-menu-end">
                         <router-link
                           class="dropdown-item"
-                          to="/"
+                          to="/bots/edit"
+                          target="_blank"
                           ><i
                             class="ri-pencil-fill align-bottom me-2 text-muted"
                           ></i>
@@ -133,7 +134,12 @@
           </div>
           <!-- end card body -->
           <div class="card-footer bg-transparent border-top-dashed py-2">
-            <div class="d-flex align-items-center justify-content-end">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="flex-shrink-0">
+                <div class="text-muted">
+                  {{ new Intl.NumberFormat('ru-RU').format(item.users_count) }} users
+                </div>
+              </div>
               <div class="flex-shrink-0">
                 <div class="text-muted">
                   <i class="ri-calendar-event-fill me-1 align-bottom"></i>
@@ -271,7 +277,7 @@
       </div>
     </div>
 
-       <div
+    <div
       class="modal fade"
       id="deleteBotModal"
       tabindex="-1"
@@ -335,7 +341,7 @@ export default {
       items: [
         {
           text: "Bot Base",
-          href: "/bots",
+          href: "/",
         },
         {
           text: "Bots",
@@ -351,6 +357,7 @@ export default {
           description: "Bot description",
           favorite: false,
           create_time: "10 Jul, 2021",
+          users_count: 1000,
         },
         {
           id: 2,
@@ -360,6 +367,7 @@ export default {
           description: "Bot description",
           favorite: false,
           create_time: "10 Jul, 2021",
+          users_count: 1000,
         },
         {
           id: 3,
@@ -369,6 +377,7 @@ export default {
           description: "Bot description",
           favorite: false,
           create_time: "10 Jul, 2021",
+          users_count: 1000,
         },
         {
           id: 4,
@@ -378,6 +387,7 @@ export default {
           description: "Bot description",
           favorite: false,
           create_time: "10 Jul, 2021",
+          users_count: 1000,
         },
         {
           id: 5,
@@ -387,6 +397,7 @@ export default {
           description: "Bot description",
           favorite: false,
           create_time: "10 Jul, 2021",
+          users_count: 1000,
         },
         {
           id: 6,
@@ -396,6 +407,7 @@ export default {
           description: "Bot description",
           favorite: false,
           create_time: "10 Jul, 2021",
+          users_count: 1000,
         },
         {
           id: 7,
@@ -405,6 +417,7 @@ export default {
           description: "Bot description",
           favorite: false,
           create_time: "10 Jul, 2021",
+          users_count: 1000,
         },
         {
           id: 8,
@@ -414,6 +427,7 @@ export default {
           description: "Bot description",
           favorite: false,
           create_time: "10 Jul, 2021",
+          users_count: 1000,
         },
       ],
     }
