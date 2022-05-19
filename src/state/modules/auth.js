@@ -1,7 +1,7 @@
 import router from '@/router/index'
 
 export const state = {
-    currentUser: sessionStorage.getItem('authUser'),
+    currentUser: localStorage.getItem('user'),
 }
 
 export const mutations = {
@@ -20,6 +20,9 @@ export const getters = {
     // Whether the user is currently logged in.
     loggedIn(state) {
         return !!state.currentUser
+    },
+    user(state) {
+        return state.currentUser
     }
 }
 
@@ -47,7 +50,6 @@ export const actions = {
     // Logs out the current user.
     logOut({ commit }) {
         // eslint-disable-next-line no-unused-vars
-        console.log('asdasd');
         commit('SET_CURRENT_USER', null)
     },
 

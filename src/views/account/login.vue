@@ -1,5 +1,4 @@
 <script>
-import { mapState } from "vuex";
 import { required, helpers } from "@vuelidate/validators";
 import useVuelidate from "@vuelidate/core";
 import appConfig from "../../../app.config";
@@ -42,7 +41,6 @@ export default {
     },
   },
   computed: {
-    ...mapState("authfack", ["status"]),
     notification() {
       return this.$store ? this.$store.state.notification : null;
     },

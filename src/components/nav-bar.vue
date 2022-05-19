@@ -106,6 +106,7 @@ export default {
       }
     },
     logout() {
+      this.axios.get('logout');
       this.logOut();
       this.$router.push({ name: 'login' });
     }

@@ -26,6 +26,22 @@ AOS.init({
 
 axios.defaults.baseURL = process.env.VUE_APP_API_HOST;
 axios.defaults.timeout = 3000;
+axios.interceptors.request.use(config => {
+    let user = store.getters.user;
+    console.log('----');
+    console.log(store.getters);
+    if (user) {
+        user = JSON.parse(user);
+        if (!config.params) {
+            config.params = {};
+        }
+        
+        config.params.acode = user.acode;
+        config.params.bcode = user.scode;
+    }
+    return config;
+});
+
 
 createApp(App)
     .use(store)
