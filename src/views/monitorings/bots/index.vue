@@ -4,10 +4,9 @@
     <div class="row g-4 mb-3">
       <div class="col-sm-auto">
         <div>
-          <button data-bs-toggle="modal"
-                  data-bs-target="#createBotModal"
+          <router-link to="/monitorings/bots/create"
                   class="btn btn-success">
-          <i class="ri-add-line align-bottom me-1"></i> Add New</button>
+          <i class="ri-add-line align-bottom me-1"></i> Add New</router-link>
         </div>
       </div>
       <div class="col-sm">
@@ -24,11 +23,15 @@
         </div>
       </div>
     </div>
+    
+    <div v-if="errorLoad" class="d-flex justify-content-center">
+      <div class="fs-18 my-5 p-2 px-5 card text-center">{{ errorLoad }}</div>
+    </div>
 
-    <div class="row">
+    <div v-else class="row">
       <div
         class="col-xxl-3 col-sm-6 project-card"
-        v-for="(item, index) of getBots()"
+        v-for="(item, index) of getMonitorings()"
         :key="index"
       >
         <div class="card card-height-100">
@@ -36,10 +39,12 @@
             <div class="d-flex flex-column h-100">
               <div class="d-flex">
                 <div class="flex-grow-1">
-                  <p class="text-muted mb-4">Last update: {{ item.update_time }}</p>
+                  <p class="text-muted mb-4">Last update: {{ normalizeDate(item.edited) }}</p>
                 </div>
                 <div class="flex-shrink-0">
                   <div class="d-flex gap-1 align-items-center">
+                    <i v-if="item.working" class="mt-n1 ri-play-fill"></i>
+                    <i v-else class="mt-n1 ri-pause-fill"></i>
                     <button
                       type="button"
                       class="btn avatar-xs mt-n1 p-0 favourite-btn shadow-none"
@@ -63,44 +68,18 @@
                       <div class="dropdown-menu dropdown-menu-end">
                         <router-link
                           class="dropdown-item"
-                          to="/bots/edit"
-                          target="_blank"
+                          :to="`/monitorings/bots/edit/${item._id}`"
                           ><i
                             class="ri-pencil-fill align-bottom me-2 text-muted"
                           ></i>
                           Edit
-                        </router-link>
-                        <router-link
-                          class="dropdown-item"
-                          to="/"
-                          ><i
-                            class="ri-eye-fill align-bottom me-2 text-muted"
-                          ></i>
-                          View in Tg
-                        </router-link>
-                        <a
-                          class="dropdown-item"
-                          href="#"
-                          data-bs-toggle="modal"
-                          data-bs-target="#sendMessageModal"
-                        >
-                          <i class="ri-mail-send-fill align-bottom me-2 text-muted"></i>
-                          Send messages
-                        </a>
-                        <router-link
-                          class="dropdown-item"
-                          to="/"
-                          ><i
-                            class="ri-user-fill align-bottom me-2 text-muted"
-                          ></i>
-                          Users
                         </router-link>
                         <div class="dropdown-divider"></div>
                         <a
                           class="dropdown-item"
                           href="#"
                           data-bs-toggle="modal"
-                          data-bs-target="#deleteBotModal"
+                          data-bs-target="#deleteMonitoringModal"
                           >
                           <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
                           Delete
@@ -119,31 +98,30 @@
                   </div>
                 </div>
                 <div class="flex-grow-1">
-                  <h5 class="mb-1 fs-15">
-                    <router-link
-                      to="/"
-                      class="text-dark"
-                      >{{ item.name }}</router-link>
+                  <h5 class="mb-1 fs-15">{{ item.title }}
                   </h5>
-                  <p class="text-muted text-truncate-two-lines mb-3">
+                  <p class="text-muted text-truncate-two-lines mb-1">
                     {{ item.description }}
                   </p>
                 </div>
               </div>
+                <div>
+                   <span v-for="(tag, index) of item.tags" 
+                   :key="index" class="badge bg-secondary me-1 mt-2">
+                     {{ tag }}
+                    </span>
+                </div>
             </div>
           </div>
           <!-- end card body -->
           <div class="card-footer bg-transparent border-top-dashed py-2">
             <div class="d-flex align-items-center justify-content-between">
               <div class="flex-shrink-0">
-                <div class="text-muted">
-                  {{ new Intl.NumberFormat('ru-RU').format(item.users_count) }} users
-                </div>
               </div>
               <div class="flex-shrink-0">
                 <div class="text-muted">
                   <i class="ri-calendar-event-fill me-1 align-bottom"></i>
-                  {{ item.create_time }}
+                  {{ onlyDate(item.created) }}
                 </div>
               </div>
             </div>
@@ -226,62 +204,11 @@
         </div>
     </div>
 
-   <div
-      class="modal fade"
-      id="createBotModal"
-      tabindex="-1"
-      aria-labelledby="createBotModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h5
-                      class="modal-title"
-                      id="createBotModalLabel"
-                  >Create Bot</h5>
-                  <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                  ></button>
-              </div>
-              <div class="modal-body">
-                  <form>
-                      <div class="mb-3">
-                          <label
-                              for="id"
-                              class="col-form-label"
-                          >ID:</label>
-                          <input
-                              type="text"
-                              class="form-control"
-                              id="id"
-                          />
-                      </div>
-                  </form>
-              </div>
-              <div class="modal-footer">
-                  <button
-                      type="button"
-                      class="btn btn-light"
-                      data-bs-dismiss="modal"
-                  >Back</button>
-                  <button
-                      type="button"
-                      class="btn btn-secondary"
-                  >Add bot</button>
-              </div>
-          </div>
-      </div>
-    </div>
-
     <div
       class="modal fade"
-      id="deleteBotModal"
+      id="deleteMonitoringModal"
       tabindex="-1"
-      aria-labelledby="deleteBotModalLabel"
+      aria-labelledby="deleteMonitoringModalLabel"
       aria-hidden="true"
     >
       <div class="modal-dialog">
@@ -289,7 +216,7 @@
               <div class="modal-header">
                   <h5
                       class="modal-title"
-                      id="deleteBotModalLabel"
+                      id="deleteMonitoringModalLabel"
                   >Are you sure you want to delete the bot?</h5>
                   <button
                       type="button"
@@ -336,11 +263,11 @@ export default {
       title: "Bots",
       filter: 'all',
       search: '',
-      editorData:
-        "<h3>Hello World!</h3><h5><b>This is an simple editable area.</b></h5>",
+      editorData: "",
+      errorLoad: '',
       items: [
         {
-          text: "Bot Base",
+          text: "Monitorings",
           href: "/",
         },
         {
@@ -348,89 +275,55 @@ export default {
           active: true,
         },
       ],
-      bots: [
-        {
-          id: 1,
-          update_time: "3 yan 2022",
-          img: require("@/assets/images/brands/slack.png"),
-          name: "Bot Name",
-          description: "Bot description",
-          favorite: false,
-          create_time: "10 Jul, 2021",
-          users_count: 1000,
-        },
-        {
-          id: 2,
-          update_time: "3 yan 2022",
-          img: require("@/assets/images/brands/slack.png"),
-          name: "Bot Name 2",
-          description: "Bot description",
-          favorite: false,
-          create_time: "10 Jul, 2021",
-          users_count: 1000,
-        },
-        {
-          id: 3,
-          update_time: "3 yan 2022",
-          img: require("@/assets/images/brands/slack.png"),
-          name: "Bot Name 3",
-          description: "Bot description",
-          favorite: false,
-          create_time: "10 Jul, 2021",
-          users_count: 1000,
-        },
-        {
-          id: 4,
-          update_time: "3 yan 2022",
-          img: require("@/assets/images/brands/slack.png"),
-          name: "Bot Name 4",
-          description: "Bot description",
-          favorite: false,
-          create_time: "10 Jul, 2021",
-          users_count: 1000,
-        },
-        {
-          id: 5,
-          update_time: "3 yan 2022",
-          img: require("@/assets/images/brands/slack.png"),
-          name: "Bot Name 5",
-          description: "Bot description",
-          favorite: false,
-          create_time: "10 Jul, 2021",
-          users_count: 1000,
-        },
-        {
-          id: 6,
-          update_time: "3 yan 2022",
-          img: require("@/assets/images/brands/slack.png"),
-          name: "Bot Name 6",
-          description: "Bot description",
-          favorite: false,
-          create_time: "10 Jul, 2021",
-          users_count: 1000,
-        },
-        {
-          id: 7,
-          update_time: "3 yan 2022",
-          img: require("@/assets/images/brands/slack.png"),
-          name: "Bot Name 7",
-          description: "Bot description",
-          favorite: false,
-          create_time: "10 Jul, 2021",
-          users_count: 1000,
-        },
-        {
-          id: 8,
-          update_time: "3 yan 2022",
-          img: require("@/assets/images/brands/slack.png"),
-          name: "Bot Name 8",
-          description: "Bot description",
-          favorite: false,
-          create_time: "10 Jul, 2021",
-          users_count: 1000,
-        },
-      ],
+      monitorings: []
     }
+  },
+  mounted() {
+    this.axios.get('monitorings/getAll').then(result => {
+      const data = result.data;
+      if (!data) {
+        this.errorLoad = 'Error load monitorings';
+        return;
+      }
+
+      // if (!data.ok) {
+      //   this.errorLoad = 'Error load monitorings';
+      //   if (data.message) {
+      //     this.errorLoad = data.message;
+      //   }
+      //   return;
+      // }
+      this.monitorings = data.data;
+    }).catch(error => {
+        this.errorLoad = 'Error load monitorings';
+        console.log(error);
+        return;
+    });
+
+    // const obj = {
+    //         title: "title",
+    //         description: "description", 
+    //         tags: ["tag1", "tag2"], 
+    //         created: '1995-12-17T03:24:00', 
+    //         edited: '1995-12-17T03:24:00', 
+    //         working: 1,
+    //         owner: 1,
+
+    //         data: {
+    //         destination: "dest",
+    //         stopwords:"stop",
+    //         keywords: "key"
+    //         }
+    //     };
+    // this.axios.get('monitorings/create', {
+    //   params: {
+    //     data: JSON.stringify(obj),
+    //   }
+    // }).then(result => {
+    //   console.log(result);
+    // }).catch(error => {
+    //   console.log(error);
+    // })
   },
   methods: {
      isFilter(item) {
@@ -446,8 +339,20 @@ export default {
 
         return true;
      },
-     getBots() {
-       return this.bots.filter(this.isFilter);
+     getMonitorings() {
+       return this.monitorings.filter(this.isFilter);
+     },
+     normalizeDate(date) {
+       const d = new Date(date);
+       return d.toLocaleDateString("en-US", {
+         year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'
+       });
+     },
+     onlyDate(date) {
+       const d = new Date(date);
+       return d.toLocaleDateString("en-US", {
+         year: 'numeric', month: 'long', day: 'numeric',
+       });
      }
   }
 }

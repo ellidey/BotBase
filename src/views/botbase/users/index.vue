@@ -6,20 +6,25 @@
         <div class="card" id="usersList">
           <div class="card-header border-0">
             <div class="row g-4 align-items-center">
-              <div class="col-sm-4 row d-flex pt-4">
-                <div class="col-sm-9">
-                  <div class="search-box">
+              <div class="row d-flex pt-4 col-sm-6">
+                <div class="search-box col-sm-6">
                   <input
                     type="text"
                     class="form-control search"
-                    placeholder="Search for..."
+                     v-model="search"
+                    placeholder="Search..."
                   />
-                  <i class="ri-search-line search-icon"></i>
-                </div>
+                  <i class="ms-2 ri-search-line search-icon"></i>
                 </div>
                 <button 
                     type="button"
-                    class="btn btn-info col-sm-3">Send message</button>
+                    class="btn btn-info col-sm-auto"
+                    data-bs-toggle="modal"
+                    data-bs-target="#sendMessageModal"
+                    >Send message</button>
+                <div class="col-sm-auto d-flex align-items-center fs-16">
+                User counts: {{ users.length }}
+                </div>
               </div>
               <div class="col-sm-auto ms-auto">
                 <div class="hstack gap-2">
@@ -382,6 +387,77 @@
           </div>
       </div>
     </div>
+
+    <div
+        class="modal fade"
+        id="sendMessageModal"
+        tabindex="-1"
+        aria-labelledby="sendMessageModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5
+                        class="modal-title"
+                        id="sendMessageModalLabel"
+                    >Send message</h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label
+                                for="message"
+                                class="col-form-label"
+                            >Message:</label>
+                            <Editor @data="(data) => { editorData = data }"> </Editor>
+                        </div>
+                        <div class="mb-3 d-flex justify-content-between">
+                            <div class="w-100 px-1">
+                              <label
+                                for="buttonName"
+                                class="col-form-label"
+                              >Button name:</label>
+                              <input
+                                  type="text"
+                                  class="form-control"
+                                  id="buttonName"
+                              />
+                            </div>
+                            <div class="w-100 px-1">
+                              <label
+                                for="buttonLink"
+                                class="col-form-label"
+                              >Buttom link:</label>
+                              <input
+                                  type="text"
+                                  class="form-control"
+                                  id="buttonLink"
+                              />
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                    >Test</button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                    >Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
   </Layout>
 </template>
 
@@ -390,6 +466,7 @@ import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 import flatPickr from "vue-flatpickr-component";
 import "flatpickr/dist/flatpickr.css";
+import Editor from "@/components/editor.vue";
 
 import Layout from "../../../layouts/main.vue";
 import PageHeader from "@/components/page-header";
@@ -407,6 +484,7 @@ export default {
   components: {
     Layout,
     PageHeader,
+    Editor,
     lottie: Lottie,
     Multiselect,
     flatPickr
@@ -433,13 +511,13 @@ export default {
         purse: false,
         lost: false,
       },
+      search: '',
       defaultOptions: { animationData: animationData },
       defaultOptions1: { animationData: animationData1 },
       page: 1,
       perPage: 8,
       pages: [],
       value: null,
-      searchQuery: null,
       date: null,
       rangeDateconfig: {
         mode: "range",
@@ -457,29 +535,32 @@ export default {
           lost: false,
           create_date: "07 Apr, 2021",
         },
+        {
+          id: 2,
+          user: '32131241',
+          name: "Job Clarke",
+          bots: ['bot1', 'bot2', 'bot3', 'bot4'],
+          twitter: "nameTwitter",
+          wallet: "580-464-4694",
+          script_done: true,
+          lost: false,
+          create_date: "07 Apr, 2021",
+        },
       ],
     };
   },
   computed: {
-    displayedPosts() {
+    displayedUsers() {
       return this.paginate(this.users);
     },
     resultQuery() {
-      if (this.searchQuery) {
-        const search = this.searchQuery.toLowerCase();
-        return this.displayedPosts.filter((data) => {
-          return (
-            data.leadsId.toLowerCase().includes(search) ||
-            data.name.toLowerCase().includes(search) ||
-            data.company.toLowerCase().includes(search) ||
-            data.score.toLowerCase().includes(search) ||
-            data.phone.toLowerCase().includes(search) ||
-            data.location.toLowerCase().includes(search) ||
-            data.date.toLowerCase().includes(search)
-          );
+      if (this.search) {
+        const search = this.search.toLowerCase();
+        return this.displayedUsers.filter((data) => {
+          return data.name.toLowerCase().startsWith(search.toLowerCase());
         });
       } else {
-        return this.displayedPosts;
+        return this.displayedUsers;
       }
     },
   },

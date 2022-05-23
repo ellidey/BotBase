@@ -161,17 +161,17 @@ export default {
         <li class="nav-item">
           <a
             class="nav-link menu-link"
-            href="#sidebarDashboards"
+            href="#sidebarBotBase"
             data-bs-toggle="collapse"
             role="button"
             aria-expanded="false"
-            aria-controls="sidebarDashboards"
+            aria-controls="sidebarBotBase"
           >
             <i class="mdi mdi-robot"></i>
             <span data-key="t-bot-base"> {{ $t("t-bot-base") }}</span>
           </a>
 
-          <div class="collapse menu-dropdown" id="sidebarDashboards">
+          <div class="collapse menu-dropdown" id="sidebarBotBase">
             <ul class="nav nav-sm flex-column">
               <li class="nav-item">
               <router-link 
@@ -205,6 +205,60 @@ export default {
                 data-key="t-settings" 
                 class="nav-link custom-abc" 
                 to="/settings">
+                {{ $t("t-settings") }}
+              </router-link>
+            </li>
+            </ul>
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <a
+            class="nav-link menu-link"
+            href="#sidebarMonitorings"
+            data-bs-toggle="collapse"
+            role="button"
+            aria-expanded="false"
+            aria-controls="sidebarMonitorings"
+          >
+            <i class="mdi mdi-monitor"></i>
+            <span data-key="t-bot-base"> {{ $t("t-monitorings") }}</span>
+          </a>
+
+          <div class="collapse menu-dropdown" id="sidebarMonitorings">
+            <ul class="nav nav-sm flex-column">
+              <li class="nav-item">
+              <router-link 
+                data-key="t-dashboards" 
+                class="nav-link custom-abc" 
+                to="/monitorings/">
+                {{ $t("t-dashboards") }}
+              </router-link>
+            </li>
+
+            <li class="nav-item">
+              <router-link 
+                data-key="t-bots"
+                class="nav-link custom-abc" 
+                to="/monitorings/bots">
+                {{ $t("t-bots") }}
+              </router-link>
+            </li>
+
+            <li class="nav-item">
+              <router-link 
+                data-key="t-users" 
+                class="nav-link custom-abc" 
+                to="/monitorings/base">
+                {{ $t("t-base") }}
+              </router-link>
+            </li>
+
+            <li class="nav-item">
+              <router-link 
+                data-key="t-settings" 
+                class="nav-link custom-abc" 
+                to="/monitorings/settings">
                 {{ $t("t-settings") }}
               </router-link>
             </li>

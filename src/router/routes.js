@@ -14,7 +14,7 @@ export default [
       title: "Dashboard",
       authRequired: true,
     },
-    component: () => import("../views/panel/dashboard/index.vue"),
+    component: () => import("../views/botbase/dashboard/index.vue"),
   },
   {
     path: "/bots",
@@ -23,7 +23,7 @@ export default [
       title: "Bots",
       authRequired: true,
     },
-    component: () => import("../views/panel/bots/index.vue"),
+    component: () => import("../views/botbase/bots/index.vue"),
   },
   {
     path: "/bots/edit",
@@ -32,7 +32,7 @@ export default [
       title: "Bots",
       authRequired: true,
     },
-    component: () => import("../views/panel/bots/edit.vue"),
+    component: () => import("../views/botbase/bots/edit.vue"),
   },
   {
     path: "/settings",
@@ -41,7 +41,7 @@ export default [
       title: "settings",
       authRequired: true,
     },
-    component: () => import("../views/panel/settings/index.vue"),
+    component: () => import("../views/botbase/settings/index.vue"),
   },
   {
     path: "/users",
@@ -50,7 +50,34 @@ export default [
       title: "users",
       authRequired: true,
     },
-    component: () => import("../views/panel/users/index.vue"),
+    component: () => import("../views/botbase/users/index.vue"),
+  },
+  {
+    path: "/monitorings/bots",
+    name: "monitorings-bots",
+    meta: {
+      title: "bots",
+      authRequired: true,
+    },
+    component: () => import("../views/monitorings/bots/index.vue"),
+  },
+  {
+    path: "/monitorings/bots/edit/:id",
+    name: "monitorings-bots-edit",
+    meta: {
+      title: "bots",
+      authRequired: true,
+    },
+    component: () => import("../views/monitorings/bots/edit.vue"),
+  },
+  {
+    path: "/monitorings/bots/create",
+    name: "monitorings-bots-create",
+    meta: {
+      title: "bots",
+      authRequired: true,
+    },
+    component: () => import("../views/monitorings/bots/create.vue"),
   },
 
   { path: "/:catchAll(.*)", component: import("../views/errors/404-basic.vue") }
