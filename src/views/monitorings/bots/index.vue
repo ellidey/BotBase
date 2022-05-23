@@ -80,6 +80,7 @@
                           href="#"
                           data-bs-toggle="modal"
                           data-bs-target="#deleteMonitoringModal"
+                          @click="deleted = item._id"
                           >
                           <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>
                           Delete
@@ -217,7 +218,7 @@
                   <h5
                       class="modal-title"
                       id="deleteMonitoringModalLabel"
-                  >Are you sure you want to delete the bot?</h5>
+                  >Are you sure you want to delete the monitoring?</h5>
                   <button
                       type="button"
                       class="btn-close"
@@ -236,6 +237,8 @@
                   <button
                       type="button"
                       class="btn btn-danger"
+                      data-bs-dismiss="modal"
+                      @click="deleteMonitoring"
                   >Delete</button>
               </div>
           </div>
@@ -279,53 +282,31 @@ export default {
     }
   },
   mounted() {
-    this.axios.get('monitorings/getAll').then(result => {
-      const data = result.data;
-      if (!data) {
-        this.errorLoad = 'Error load monitorings';
-        return;
-      }
-
-      // if (!data.ok) {
-      //   this.errorLoad = 'Error load monitorings';
-      //   if (data.message) {
-      //     this.errorLoad = data.message;
-      //   }
-      //   return;
-      // }
-      this.monitorings = data.data;
-    }).catch(error => {
-        this.errorLoad = 'Error load monitorings';
-        console.log(error);
-        return;
-    });
-
-    // const obj = {
-    //         title: "title",
-    //         description: "description", 
-    //         tags: ["tag1", "tag2"], 
-    //         created: '1995-12-17T03:24:00', 
-    //         edited: '1995-12-17T03:24:00', 
-    //         working: 1,
-    //         owner: 1,
-
-    //         data: {
-    //         destination: "dest",
-    //         stopwords:"stop",
-    //         keywords: "key"
-    //         }
-    //     };
-    // this.axios.get('monitorings/create', {
-    //   params: {
-    //     data: JSON.stringify(obj),
-    //   }
-    // }).then(result => {
-    //   console.log(result);
-    // }).catch(error => {
-    //   console.log(error);
-    // })
+    this.loadMonitorings();
   },
   methods: {
+    loadMonitorings() {
+      this.axios.get('monitorings/getAll').then(result => {
+        const data = result.data;
+        if (!data) {
+          this.errorLoad = 'Error load monitorings';
+          return;
+        }
+
+        if (!data.ok) {
+          this.errorLoad = 'Error load monitorings';
+          if (data.message) {
+            this.errorLoad = data.message;
+          }
+          return;
+        }
+        this.monitorings = data.data;
+      }).catch(error => {
+          this.errorLoad = 'Error load monitorings';
+          console.log(error);
+          return;
+      });
+    },
      isFilter(item) {
         if (this.filter === 'favorites') {
           if (!item.favorite) {
@@ -333,14 +314,14 @@ export default {
           }
         }
 
-          if (this.search.length > 0 && !item.name.toLowerCase().includes(this.search)) {
-            return false;
-          }
+        if (this.search.length > 0 && !item.title.toLowerCase().includes(this.search)) {
+          return false;
+        }
 
         return true;
      },
      getMonitorings() {
-       return this.monitorings.filter(this.isFilter);
+        return this.monitorings.filter(this.isFilter);
      },
      normalizeDate(date) {
        const d = new Date(date);
@@ -353,6 +334,28 @@ export default {
        return d.toLocaleDateString("en-US", {
          year: 'numeric', month: 'long', day: 'numeric',
        });
+     },
+     deleteMonitoring() {
+       this.axios.get('monitorings/' + this.deleted + '/delete').then(result => {
+        const data = result.data;
+        if (!data) {
+          this.errorLoad = 'Error load monitorings';
+          return;
+        }
+
+        if (!data.ok) {
+          this.errorLoad = 'Error load monitorings';
+          if (data.message) {
+            this.errorLoad = data.message;
+          }
+          return;
+        }
+        this.loadMonitorings();
+      }).catch(error => {
+          this.errorLoad = 'Error load monitorings';
+          console.log(error);
+          return;
+      });
      }
   }
 }

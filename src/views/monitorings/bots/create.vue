@@ -19,7 +19,7 @@
                                     </div>
                                     <div class="col-md">
                                         <div>
-                                            <h4 class="fw-bold mb-0">{{ item.name }}</h4>
+                                            <h4 class="fw-bold mb-0">{{ item.title }}</h4>
                                             <div class="mb-2">
                                               {{ item.description }}
                                             </div>
@@ -34,7 +34,10 @@
                             </div>
                             <div class="col-md-auto">
                                 <div class="hstack gap-1 flex-wrap">
-                                    <button type="button" class="btn btn-danger p-0 px-3 rounded-pill">Delete</button>
+                                    <button type="button" 
+                                      class="btn btn-danger p-0 px-3 rounded-pill"
+                                      @click="this.$router.push({ name: 'monitorings-bots' })"
+                                      >Delete</button>
                                     <button
                                       type="button"
                                       class="btn avatar-xs mt-n1 p-0 favourite-btn shadow-none"
@@ -93,7 +96,7 @@
         <div class="row mx-3 mb-3 mt-2">
           <div class="col-lg-12">
               <label for="description" class="form-label">Description</label>
-              <textarea class="form-control" id="description" rows="5" :value="item.description"></textarea>
+              <textarea class="form-control" id="description" rows="5" v-model="item.description"></textarea>
           </div>
         </div>
 
@@ -227,50 +230,58 @@ export default {
       ],
       item: {
         id: 1,
-        title: 'Monitoring title',
-        description: 'Monitoring description',
+        title: '',
+        description: '',
         working: false,
-        edited: "3 yan 2022",
-        created: "10 Jul, 2021",
         owner: null,
         data: {
-          stopwords: 'stopword',
-          keywords: 'keywords',
-          destination: 'destination'
+          stopwords: '',
+          keywords: '',
+          destination: ''
         },
         tags: []
       },
     }
   },
-  mounted() {
-    this.axios.get('monitorings/' + this.$route.params.id).then(result => {
-      const data = result.data;
-      if (!data) {
-        this.errorLoad = 'Error load monitoring';
-        return;
-      }
-
-      if (!data.ok) {
-        this.errorLoad = 'Error load monitoring';
-        if (data.message) {
-          this.errorLoad = data.message;
-        }
-        return;
-      }
-      console.log(data);
-      // this.item = data.data;
-    }).catch(error => {
-        this.errorLoad = 'Error load monitoring';
-        console.log(error);
-        return;
-    });
-  },
   methods: {
     setBotStatus(status) {
       this.item.working = status;
     },
+    destinationFormat(dest) {
+      let result = dest;
+      result = result.split('/');
+      result = result[result.length - 1];
+      if (result.startsWith('+')) {
+        result = result.replace('+', '');
+      }
+      return result;
+    },
     save() {
-      console.log(this.item)
+      this.item.data.destination = this.destinationFormat(this.destination);
+      this.axios.get('monitorings/create', {
+         params: {
+           'data': JSON.stringify(this.item)
+         }
+       }).then(result => {
+        const data = result.data;
+        if (!data) {
+          this.errorLoad = 'Error create monitoring';
+          return;
+        }
+
+        if (!data.ok) {
+          this.errorLoad = 'Error create monitoring';
+          if (data.message) {
+            this.errorLoad = data.message;
+          }
+          return;
+        }
+      this.$router.push({ name: 'monitorings-bots' })
+      }).catch(error => {
+          this.errorLoad = 'Error create monitoring';
+          console.log(error);
+          return;
+      });
     },
     check(event, name) {
       if (event.target.checked) {
